@@ -43,7 +43,7 @@ export type SplitRowsDoubleOptions<T extends boolean> = {
 }
 
 export function splitRows(input: string, opts: SplitRowsOptions<true>): number[];
-export function splitRows(input: string, opts: SplitRowsOptions<false>): string[];
+export function splitRows(input: string, opts?: SplitRowsOptions<false>): string[];
 export function splitRows(input: string, opts?: SplitRowsOptions<boolean>): number[] | string[];
 export function splitRows(input: string, opts: SplitRowsOptions<boolean> = {}) {
     let { emptyRows = false, trimRows = true, asNumber = false } = opts;
@@ -72,3 +72,5 @@ export function splitRowsDouble(input: string, opts: SplitRowsDoubleOptions<bool
     const byEmptyRow = splitRows(input, { emptyRows: 1, trimRows: false, asNumber: false });
     return byEmptyRow.map(row => splitRows(row, { emptyRows: 0, trimRows, asNumber }));
 }
+
+export const sum = (arr: number[]) => arr.reduce((acc, val) => acc + val, 0);
