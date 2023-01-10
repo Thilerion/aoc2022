@@ -23,6 +23,18 @@ const toPriority = (char: string) => {
 const toPriorities = (values: string[]) => {
   return values.map(char => toPriority(char));
 }
+const groupThreeElves = (input: string[]) => {
+  const list = [...input].reverse();
+  const total: [string, string, string][] = [];
+  let i = 0;
+  while (list.length > 2) {
+    const group: [string, string, string] = [list.pop()!, list.pop()!, list.pop()!];
+    total.push(group.reverse() as [string, string, string]);
+    if (i > input.length) throw new Error('oops, invalid loop.');
+    i += 3;
+  }
+  return total;
+}
 
 const part1 = (rawInput: string): number => {
   const input = parseInput(rawInput);
@@ -36,8 +48,26 @@ const part1 = (rawInput: string): number => {
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput);
-
-  return;
+  const grouped = groupThreeElves(input);
+  const badges: string[] = [];
+  for (const group of grouped) {
+    const [a, b, c] = group.map(arr => new Set(arr.split('')));
+    const sharedAB = [...a].filter(valueA => {
+      return b.has(valueA);
+    })
+    const sharedABC = [...sharedAB].filter(valueAB => {
+      return c.has(valueAB);
+    })
+    if (sharedABC.length > 1) {
+      throw new Error('multiple badges');
+    } else if (sharedABC.length < 1) {
+      console.log({ a, b, c, sharedABC, sharedAB, group, grouped})
+      throw new Error('no badge...');
+    }
+    badges.push(...sharedABC);
+  }
+  const priorities = toPriorities(badges);
+  return sum(priorities);
 };
 
 run({
@@ -57,10 +87,15 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `vJrwpWtwJgWrhcsFMMfFFhFp
+        jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+        PmmdzqPrVvPwwTWBwg
+        wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+        ttgJtRGJQctTZtZT
+        CrZsJsPPZsGzwwsLwLmpwMDw`,
+        expected: 70,
+      },
     ],
     solution: part2,
   },
