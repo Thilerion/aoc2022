@@ -1,23 +1,17 @@
 import run from "aocrunner";
-import { splitRowsDouble } from "../utils/index.js";
 
-const parseInput = (rawInput: string): number[][] => {
-  return splitRowsDouble(rawInput, { asNumber: true });
-}
+const parseInput = (rawInput: string) => rawInput;
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput);
-  return Math.max(...input.map(elf => {
-    return elf.reduce((acc, val) => acc + val, 0);
-  }));
+
+  return;
 };
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput);
-  const list = input.map(elf => {
-    return elf.reduce((acc, val) => acc + val, 0);
-  }).sort((a, b) => b - a);
-  return list[0] + list[1] + list[2];
+
+  return;
 };
 
 run({
