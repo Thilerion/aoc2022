@@ -66,13 +66,15 @@
         "solved": true,
         "result": "ZWHVFWQWW",
         "attempts": [],
-        "time": 138.445
+        "time": 2.2038
       },
       "part2": {
-        "solved": false,
-        "result": null,
-        "attempts": [],
-        "time": null
+        "solved": true,
+        "result": "HZFZCCWWV",
+        "attempts": [
+          "ZWHVFWQWW"
+        ],
+        "time": 2.1853
       }
     },
     {

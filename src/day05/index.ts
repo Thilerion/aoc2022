@@ -29,9 +29,20 @@ class TableColumn {
     this.items.push(item);
     return this;
   }
-  moveTopTo(column: TableColumn) {
+  moveTopTo(column: TableColumn, n = 1, keepOrdered = false) {
     const item = this.items.pop()!;
     column.moveOnTop(item);
+    return this;
+  }
+  moveTopOrderedTo(column: TableColumn, n = 1) {
+    const top: string[] = [];
+    for (let i = 0; i < n; i++) {
+      top.push(this.items.pop()!);
+    }
+    // top.reverse();
+    for (let j = 0; j < n; j++) {
+      column.moveOnTop(top.pop()!);
+    }
     return this;
   }
   finish() {
@@ -86,6 +97,13 @@ const moveToColumn = (columns: TableColumn[], move: Move) => {
     colFrom.moveTopTo(colTo);
   }
 }
+const moveToColumnOrdered = (columns: TableColumn[], move: Move) => {
+  const { amount, from, to } = move;
+  const colFrom = columns.find(c => c.no === from)!;
+  const colTo = columns.find(c => c.no === to)!;
+
+  colFrom.moveTopOrderedTo(colTo, amount);
+}
 
 const part1 = (rawInput: string) => {
   const [initialBoard, rawMoveList] = parseInput(rawInput);
@@ -98,9 +116,13 @@ const part1 = (rawInput: string) => {
 };
 
 const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
-
-  return;
+  const [initialBoard, rawMoveList] = parseInput(rawInput);
+  const parsedBoard = parseBoard(initialBoard);
+  const parsedMoveList = parseRawMoveList(rawMoveList);
+  for (const move of parsedMoveList) {
+    moveToColumnOrdered(parsedBoard, move);
+  }
+  return parsedBoard.map(col => col.peek()).join('');
 };
 
 run({
@@ -115,10 +137,10 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: testInput,
+        expected: "MCD",
+      },
     ],
     solution: part2,
   },
