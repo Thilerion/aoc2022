@@ -34,8 +34,8 @@ const part1 = (rawInput: string) => {
       const h = grid[y][x];
       const vec = { x, y };
       
-      const fromLeft = grid[y].slice(0, x);
-      const fromRight = grid[y].slice(x + 1, width + 1).reverse();
+      const fromLeft = grid[y].slice(0, x).reverse();
+      const fromRight = grid[y].slice(x + 1, width + 1);
       const fromTop = transposed[x].slice(0, y).reverse();
       const fromBottom = transposed[x].slice(y + 1, height + 1);
 
@@ -61,10 +61,42 @@ const part1 = (rawInput: string) => {
   return visible.length;
 };
 
-const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
+const calculateScenicScoreInDirection = (height: number, trees: number[]): number => {
+  const higherIdx = trees.findIndex(v => v >= height);
+  if (higherIdx < 0) return trees.length;
+  return higherIdx + 1;
+}
+const calculateScenicScore = (height: number, views: number[][]) => {
+  let score = 1;
+  for (const view of views) {
+    score *= calculateScenicScoreInDirection(height, view);
+  }
+  return score;
+}
 
-  return;
+
+const part2 = (rawInput: string) => {
+  const grid = parseInput(rawInput);
+  // const alongEdges = countEdges(grid);
+  const transposed = transpose(grid);
+  const [width, height] = getDimensions(grid);
+  let maxScore = -1;
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const h = grid[y][x];
+      const vec = { x, y };
+      
+      const fromLeft = grid[y].slice(0, x).reverse();
+      const fromRight = grid[y].slice(x + 1, width + 1);
+      const fromTop = transposed[x].slice(0, y).reverse();
+      const fromBottom = transposed[x].slice(y + 1, height + 1);
+
+      const score = calculateScenicScore(h, [fromLeft, fromRight, fromTop, fromBottom]);
+      if (score > maxScore) maxScore = score;
+    }
+  }
+  return maxScore;
 };
 
 run({
@@ -85,10 +117,16 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `
+        30373
+        25512
+        65332
+        33549
+        35390
+        `,
+        expected: 8,
+      },
     ],
     solution: part2,
   },
