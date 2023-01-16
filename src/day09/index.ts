@@ -57,13 +57,26 @@ const getKnotMovement = (current: Vec, nextCurrent: Vec, nextUpdated: Vec) => {
 }
 
 class RopeMover {
-  head: Vec = new Vec(0, 0);
-  tail: Vec = new Vec(0, 0);
+  knots: Vec[];
   positions: Set<string> = new Set();
 
-  updatePositions(head: Vec, tail: Vec) {
-    this.head = head;
-    this.tail = tail;
+  constructor(size = 2) {
+    const knots = [];
+    for (let i = 0; i < size; i++) {
+      knots.push(new Vec(0, 0));
+    }
+    this.knots = knots;
+  }
+
+  get head() {
+    return this.knots[0];
+  }
+  get tail() {
+    return this.knots[this.knots.length - 1];
+  }
+
+  updatePositions(knots: Vec[]) {
+    this.knots = [...knots];
     return this;
   }
 
@@ -84,10 +97,26 @@ class RopeMover {
     return this;
   }
 
+  moveKnots(dir: Dir) {
+    const head2 = this.moveHeadInDir(dir);
+    const prevKnots = [...this.knots];
+    const knots = [head2];
+    for (let i = 1; i < this.knots.length; i++) {
+      const current = prevKnots[i];
+      const nextCurrent = prevKnots[i - 1];
+      const nextUpdated = knots[i - 1];
+      const currentUpdated = getKnotMovement(current, nextCurrent, nextUpdated);
+      knots.push(currentUpdated);
+    }
+    this.updatePositions(knots);
+    this.recordTailPosition();
+    return this;
+  }
+
   move(dir: Dir) {
     const head2 = this.moveHeadInDir(dir);
     const tail2 = this.moveTail(head2);
-    this.updatePositions(head2, tail2);
+    this.updatePositions([head2, tail2]);
     this.recordTailPosition();
     // console.log({ dir, head: this.head.toCoordString(), tail: this.tail.toCoordString()})
     return this;
@@ -107,8 +136,13 @@ const part1 = (rawInput: string) => {
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput);
-
-  return;
+  const expanded = expandInput(input);
+  // console.log(expanded);
+  const ropeMover = new RopeMover(10);
+  for (const dir of expanded) {
+    ropeMover.moveKnots(dir);
+  }
+  return ropeMover.positions.size;
 };
 
 run({
@@ -132,10 +166,19 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `
+        R 4
+        U 4
+        L 3
+        D 1
+        R 4
+        D 1
+        L 5
+        R 2
+        `,
+        expected: 1,
+      },
     ],
     solution: part2,
   },
