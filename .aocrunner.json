@@ -140,13 +140,13 @@
         "attempts": [
           "11160"
         ],
-        "time": 0.8148
+        "time": 0.5699
       },
       "part2": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "BZPAJELK",
         "attempts": [],
-        "time": null
+        "time": 1.7084
       }
     },
     {
