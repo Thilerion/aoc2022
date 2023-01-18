@@ -118,9 +118,9 @@ Both parts: 43.65ms
 
 ```
 Day 08
-Time part 1: -
-Time part 2: -
-Both parts: -
+Time part 1: 31.887ms
+Time part 2: 18.571ms
+Both parts: 50.457ms
 ```
 
 ```
