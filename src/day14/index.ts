@@ -124,6 +124,13 @@ class Cave {
     } else {
       this.withFloor = false;
     }
+
+    if (this.withFloor !== false) {
+      for (let x = 0; x < 1000; x++) {
+        const vec = new Vec(x, this.withFloor);
+        this.map.set(vec.toCoordString(), Material.Rock);
+      }
+    }
     
 
     const minMaxCoords = getMinMaxCoords([
@@ -176,7 +183,7 @@ class Cave {
     if (this.currentFalling == null) {
       this.spawn();
     }
-    let lastResult = false;
+    let lastResult: boolean = this.finished;
     while (!lastResult) {
       lastResult = this.fall();
     }
@@ -192,7 +199,9 @@ class Cave {
     }
     const curSourceValue = this.map.get(this.sourceStr);
     if (curSourceValue != null && curSourceValue !== Material.Air) {
-      this.fallInAbyss();
+      this.finished = true;
+      this.currentFalling = null;
+      // this.numSpawned -= 1;
       console.log('spawn on source');
       return this;
     }
@@ -256,15 +265,20 @@ class Cave {
     const curDown = this.map.get(down.toCoordString());
     if (curDown != null && curDown !== Material.Air) return false;
     // can fall down. if playing with floor, check if touches floor
-    if (this.hasFloor && down.y >= this.withFloor) {
+    if (this.hasFloor && down.y === this.withFloor as number) {
       // set one down as rock, and move down
-      const floorPos = moveInDir(down, 'S');
-      const floorPosLeft = moveInDir(floorPos, 'W');
-      const floorPosRight = moveInDir(floorPos, 'E');
-      this.map.set(floorPos.toCoordString(), Material.Rock);
-      this.map.set(floorPosLeft.toCoordString(), Material.Rock);
-      this.map.set(floorPosRight.toCoordString(), Material.Rock);
-      return down;
+      // const floorPos = moveInDir(down, 'S');
+      // const floorPosLeft = moveInDir(floorPos, 'W');
+      // const floorPosRight = moveInDir(floorPos, 'E');
+      // this.map.set(floorPos.toCoordString(), Material.Rock);
+      // this.map.set(floorPosLeft.toCoordString(), Material.Rock);
+      // this.map.set(floorPosRight.toCoordString(), Material.Rock);
+      return false;
+    } else if (this.hasFloor && down.y > this.withFloor) {
+      console.log(cur.clone());
+      console.log(down.clone());
+      console.log(this.withFloor);
+      throw new Error(`${ {floor: this.withFloor, y: down.y }}`);
     }
     // can fall down, but  check if falls in abyss
     if (!this.hasFloor && this.currentDownCount > 5000) {
@@ -332,12 +346,12 @@ const part2 = (rawInput: string) => {
 
   const cave = new Cave(allPoints, new Vec(500, 0), true);
 
-  for (let i = 0; i < 94; i++) {
+  for (let i = 0; i < 50000; i++) {
     if (cave.finished) break;
     cave.next();
     // cave.autoDraw()
   }
-  cave.autoDraw();
+  // cave.autoDraw();
   return cave.numSpawned;
 
 };
@@ -368,5 +382,5 @@ run({
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: true,
+  // onlyTests: true,
 });
